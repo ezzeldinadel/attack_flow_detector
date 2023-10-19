@@ -19,7 +19,7 @@ runtime_sm_client = boto3.client(service_name='sagemaker-runtime', config = conf
 s3_client = boto3.client("s3")
 bucket = "technique-sagemaker-v1"
 
-endpoint_name = 'seshat-correlation-endpoint'
+endpoint_name = 'seshat-correlation-gpu-endpoint'
 
 import json
 content_type = "application/json"
