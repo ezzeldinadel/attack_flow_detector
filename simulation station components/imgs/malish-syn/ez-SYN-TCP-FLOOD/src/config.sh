@@ -1,0 +1,14 @@
+#!/bin/bash
+
+TARGET_IP="113.10.167.250"
+
+TARGET_PORT="80"
+
+NUM_WORKERS=4
+
+SERVER_PORT=8001
+
+SLEEP_TIME=0
+
+export SERVE_DIR=out
+

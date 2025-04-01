@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+
+set -e
+
+cd $DIR
+
+docker build -t mg-malish-apt .
+

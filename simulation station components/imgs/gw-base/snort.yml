@@ -1,0 +1,269 @@
+---
+
+- hosts: localhost
+  user: root
+  name: Install Snort and set-up gateway
+  tasks:
+
+  - shell: "cat /proc/cpuinfo | grep -E '^processor' | wc -l"
+    register: threads
+
+  - name: link snort
+    file:
+      src: /usr/local/bin/snort
+      dest: /usr/sbin/snort
+      state: link
+
+  - name: make group snort
+    group:
+      name: snort
+      state: present
+
+  - name: make user snort
+    user:
+      name: snort
+      comment: Snort IDS
+      group: snort
+      shell: /sbin/nologin
+
+  - name: make snort dirs
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: snort
+      group: snort
+      mode: 775
+    with_items:
+      - /etc/snort
+      - /etc/snort/rules
+      - /etc/snort/rules/iplists
+      - /etc/snort/preproc_rules
+      - /usr/local/lib/snort_dynamicrules
+      - /etc/snort/so_rules
+      - /var/log/snort
+      - /var/log/snort/archived_logs
+
+  - name: create snort files
+    copy:
+      force: no
+      content: ""
+      dest: "{{ item }}"
+      group: snort
+      owner: snort
+      mode: 775
+    with_items:
+      - /etc/snort/rules/iplists/black_list.rules
+      - /etc/snort/rules/iplists/white_list.rules
+      - /etc/snort/rules/local.rules
+      - /etc/snort/sid-msg.map
+
+  - name: copy configs to snort dir (1/2)
+    copy:
+      src: "{{ item }}"
+      dest: /etc/snort
+    with_fileglob:
+      - /root/snort-2.9.9.0/etc/*conf*
+      - /root/snort-2.9.9.0/etc/*.map
+      - /root/snort-2.9.9.0/etc/*.dtd
+
+  - name: copy configs to snort dir (2/2)
+    copy:
+      src: "{{ item }}"
+      dest: /usr/local/lib/snort_dynamicpreprocessor/
+    with_fileglob:
+      - /root/snort-2.9.9.0/src/dynamic-preprocessors/build/usr/local/lib/snort_dynamicpreprocessor/*
+
+  - name: Snort config (1/6)
+    replace:
+      path: /etc/snort/snort.conf
+      regexp: '^(include \$RULE_PATH.*)'
+      replace: '#\1'
+
+  - name: Snort config (2/6)
+    lineinfile:
+      path: /etc/snort/snort.conf
+      regexp: 'ipvar HOME_NET any'
+      line: 'ipvar HOME_NET 210.0.0.0/24'
+
+  - name: Snort config (3/6)
+    lineinfile:
+      path: /etc/snort/snort.conf
+      regexp: "var {{ item.a }} ../.*"
+      line: 'var {{ item.a }} {{ item.b }}'
+    with_items:
+      - a: RULE_PATH
+        b: /etc/snort/rules
+      - a: SO_RULE_PATH
+        b: /etc/snort/so_rules
+      - a: PREPROC_RULE
+        b: /etc/snort/preproc_rules
+      - a: WHITE_LIST_PATH
+        b: /etc/snort/rules/iplists
+      - a: BLACK_LIST_PATH
+        b: /etc/snort/rules/iplists
+
+  - name: Snort config (4/6)
+    lineinfile:
+      path: /etc/snort/snort.conf
+      regexp: "#(include \\$RULE_PATH/local.rules)"
+      line: '\1'
+      backrefs: yes
+
+  - name: Ensure snort config working
+    shell: "snort -T -i ens4 -c /etc/snort/snort.conf"
+
+#  - name: Snort config (5/6)
+#    lineinfile:
+#      path: /etc/snort/snort.conf
+#      regexp: '\\s*#\\s*config daq:.*'
+#      line: 'config daq: afpacket'
+
+#  - name: Snort config (6/6)
+#    lineinfile:
+#      path: /etc/snort/snort.conf
+#      regexp: '\\s*#\\s*config daq_mode:.*'
+#      line: 'config daq_mode: inline'
+
+
+  - name: verify snort dirs
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: snort
+      group: snort
+      mode: 775
+    with_items:
+      - /etc/snort
+      - /etc/snort/rules
+      - /etc/snort/rules/iplists
+      - /etc/snort/preproc_rules
+      - /usr/local/lib/snort_dynamicrules
+      - /etc/snort/so_rules
+      - /var/log/snort
+      - /var/log/snort/archived_logs
+
+  - name: Add output line to snort.conf
+    lineinfile:
+      path: /etc/snort/snort.conf
+      regexp: 'output unified2: filename snort.u2, limit 128'
+      insertafter: '^# output unified2: filename merged.log'
+      line: 'output unified2: filename snort.u2, limit 128'
+
+  # install barnyard
+  - name: download Barnyard source
+    get_url:
+      url: https://github.com/firnsy/barnyard2/archive/master.tar.gz
+      dest: /root/barnyard2-Master.tar.gz
+
+  - name: unarchive Barnyard
+    unarchive:
+      src: /root/barnyard2-Master.tar.gz
+      dest: /root/
+
+  - name: configure Barnyard (1/2)
+    shell: autoreconf -fvi -I ./m4
+    args:
+      chdir: /root/barnyard2-master
+
+  - name: link dnet
+    file:
+      src: /usr/include/dumbnet.h
+      dest: /usr/include/dnet.h
+      state: link
+
+  - name: ldconfig
+    shell: ldconfig
+
+  - name: configure Barnyard (2/2)
+    shell: ./configure --with-mysql --with-mysql-libraries=/usr/lib/x86_64-linux-gnu
+    args:
+      chdir: /root/barnyard2-master
+
+  - name: make Barnyard
+    make:
+      chdir: /root/barnyard2-master
+      params:
+        NUM_THREADS: "{{ threads.stdout }}"
+
+  - name: install Barnyard
+    make:
+      chdir: /root/barnyard2-master
+      target: install
+
+  - name: verify barnyard installation
+    shell: /usr/local/bin/barnyard2 -V
+
+  - name: create waldo file for barnyard
+    copy:
+      force: no
+      content: ""
+      dest: /var/log/snort/barnyard2.waldo
+      group: snort
+      owner: snort
+      mode: 775
+
+  - name: copy barnyard conf to snort
+    copy:
+      src: /root/barnyard2-master/etc/barnyard2.conf
+      dest: /etc/snort
+      owner: snort
+      group: snort
+      mode: 775
+
+  - name: create barnyard log directory
+    file:
+      path: /var/log/barnyard2
+      state: directory
+      owner: snort
+      group: snort
+
+  - name: fix log dir permissions
+    file:
+      path: /var/log/snort
+      state: directory
+      owner: snort
+      group: snort
+      mode: '775'
+
+  - name: fix log dir permissions (1/2)
+    shell: chmod -R 755 /var/log/snort
+
+  - name: fix log dir permissions (2/2)
+    shell: chown -R snort:snort /var/log/snort
+
+    #  - name: add default ping rule
+    #    lineinfile:
+    #      path: /etc/snort/rules/local.rules
+    #      line: 'alert icmp any any -> any any (msg: "IP Packet detected"; sid: 10; rev: 1;)'
+    #      create: yes
+
+  - name: DB config for barnyard
+    lineinfile:
+      path: /etc/snort/barnyard2.conf
+      line: 'output database: log, mysql, user=snort password=snort dbname=snort host=localhost sensor name=sensor01'
+      create: yes
+
+  - name: restrict barnyard config access
+    shell: chmod o-r /etc/snort/barnyard2.conf
+
+  - name: allow external MySQL access
+    replace:
+      path: /etc/mysql/my.cnf
+      regexp: 127\.0\.0\.1
+      replace: 0.0.0.0
+
+      #- name: init barnyard database
+      #  shell: /root/queries.sh
+
+      #  #  - name: run Snort in screen
+      #  #    shell: screen -d -m bash -c 'snort -Q -c /etc/snort/snort.conf -i ingress:egress -u snort -g snort'
+
+      #- name: run Barnyard in screen
+      #  shell: screen -d -S barnyard -m bash -c 'sudo barnyard2 -c /etc/snort/barnyard2.conf -d /var/log/snort -f snort.u2 -w /var/log/snort/barnyard2.waldo -g snort -u snort'
+
+      #- name: restart MySQL
+      #  service:
+      #    name: mysql
+      #    state: restarted
+
+

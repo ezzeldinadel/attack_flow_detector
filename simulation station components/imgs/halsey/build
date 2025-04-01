@@ -1,0 +1,16 @@
+#!/bin/bash
+
+KEY_PATH="$1"
+DIR=$(dirname $0)
+
+
+cd $DIR
+
+set -e
+
+cd halsey-api
+./build.sh
+cd ..
+
+docker build -t mg-halsey .
+

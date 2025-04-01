@@ -1,0 +1,2 @@
+rate filter gen_id 1, sig_id 100, track by_rule, count 20, seconds 1, new_action drop, timeout 10
+rate_filter gen_id 1, sig_id 101, track by_rule, count 20, seconds 1, new_action drop, timeout 10

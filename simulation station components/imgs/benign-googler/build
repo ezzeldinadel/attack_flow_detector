@@ -1,0 +1,19 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+
+cd $DIR
+
+set -e
+
+cd puppet-master
+
+./build.sh
+
+cd ..
+
+docker build -t mg-benign-googler .
+
+
+
+

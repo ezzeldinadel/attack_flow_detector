@@ -1,0 +1,6 @@
+alert icmp any any -> any any (msg: "IP Packet detected";  threshold: type both, track by_src, count 5, seconds 1; sid: 101; rev: 1;)
+
+alert tcp any any -> any any (flags: S; msg:"Possible TCP SYN Flood"; flow: stateless; threshold: type both, track by_src, count 5, seconds 1; sid:100;rev:1;)
+
+
+

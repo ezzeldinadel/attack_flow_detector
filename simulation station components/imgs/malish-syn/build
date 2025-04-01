@@ -1,0 +1,14 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+
+cd $DIR
+
+set -e
+
+cd ez-SYN-TCP-FLOOD
+./build.sh
+cd ..
+
+docker build -t mg-malish-syn .
+
