@@ -1,0 +1,159 @@
+---
+
+- hosts: localhost
+  user: root
+  name: Install ODL & VTN
+  tasks:
+
+  - name: get number of cores
+    shell: "cat /proc/cpuinfo | grep -E '^processor' | wc -l"
+    register: threads
+
+  - debug:
+      var: threads.stdout
+
+#  - apt_repository:
+#      repo: "ppa:openjdk-r/ppa"
+
+  - name: install dependencies
+    apt:
+      name: "{{ packages }}"
+      update_cache: yes
+      state: latest
+      force: yes
+    vars:
+      packages:
+        - ca-certificates
+        - openjdk-8-jdk
+        - pkg-config
+        - gcc
+        - make
+        - ant
+        - g++
+        - maven
+        - git
+        - libboost-dev
+        - libcurl4-openssl-dev
+        - libssl-dev
+        - unixodbc-dev
+        - libjson0-dev
+        - cmake
+        - libgtest-dev
+        - postgresql-9.5
+        - postgresql-client-9.5
+        - postgresql-client-common
+        - postgresql-contrib-9.5
+        - odbc-postgresql
+        - cmake
+        - libgtest-dev
+        - sshpass
+
+  - name: copy Gtest
+    copy:
+      src: /usr/src/gtest/
+      dest: /root/gtest-work/
+
+  - name: cmake Gtest
+    shell: cmake CMakeLists.txt
+    args:
+      chdir: /root/gtest-work
+
+  - name: make Gtest
+    make:
+      chdir: /root/gtest-work
+      params:
+        NUM_THREADS: "{{ threads.stdout }}"
+
+  - name: copy Gtest object files files to libs
+    copy:
+      src: "{{ item }}"
+      dest: /usr/lib
+    with_fileglob:
+      - /root/gtest-work/*.a
+
+  - name: export PATH
+    lineinfile:
+      path: /root/.bashrc
+      create: yes
+      line: "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/"
+
+  - file:
+      path: /root/odl
+      state: directory
+
+  - name: download ODL source
+    get_url:
+      url: https://nexus.opendaylight.org/content/repositories/public/org/opendaylight/integration/distribution-karaf/0.6.2-Carbon/distribution-karaf-0.6.2-Carbon.tar.gz
+      dest: /root/odl/
+
+  - name: unarchive
+    unarchive:
+      src: /root/odl/distribution-karaf-0.6.2-Carbon.tar.gz
+      dest: /root/odl/
+
+  - name: link ODL
+    file:
+      src: /root/odl/distribution-karaf-0.6.2-Carbon
+      dest: /etc/sdn
+      state: link
+
+  - name: start ODL
+    shell: screen -d -m bash -c '/etc/sdn/bin/karaf'
+
+  # Fix m2 for VTN
+  - name: make m2 dir
+    file:
+      path: /root/.m2
+      state: directory
+
+  - name: fix m2 settings
+    shell: "cp -n ~/.m2/settings.xml{,.orig} ; \
+wget -q -O - https://raw.githubusercontent.com/opendaylight/odlparent/master/settings.xml > ~/.m2/settings.xml"
+
+
+  - name: checkout
+    git:
+      repo: https://github.com/opendaylight/vtn.git
+      dest: /root/odl/vtn/
+      version: release/oxygen
+
+  - name: maven build
+    shell: "mvn -T {{ threads.stdout }} -f dist/pom.xml install"
+    args:
+      chdir: /root/odl/vtn/coordinator
+
+  - name: configure VTN
+    shell: ./configure
+    args:
+      chdir: /root/odl/vtn/coordinator
+
+  - name: make VTN
+    make:
+      chdir: /root/odl/vtn/coordinator
+      params:
+        NUM_THREADS: "{{ threads.stdout }}"
+
+  - name: install VTN
+    make:
+      chdir: /root/odl/vtn/coordinator
+      target: install
+
+  - name: Setup VTN DB
+    shell: /usr/local/vtn/sbin/db_setup
+
+  - name: Run VTN coordinator
+    shell: /usr/local/vtn/bin/vtn_start
+
+  - name: Refresh ODL features repo
+    shell: "sshpass -p karaf ssh -p 8101 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no karaf@localhost 'feature:repo-refresh'"
+
+  - name: Install ODL features
+    shell: "sshpass -p karaf ssh -p 8101 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no karaf@localhost 'feature:install odl-dluxapps-applications odl-restconf odl-dluxapps-applications odl-openflowplugin-southbound odl-vtn-manager-rest odl-l2switch-hosttracker'"
+
+
+      
+  
+  
+
+
+

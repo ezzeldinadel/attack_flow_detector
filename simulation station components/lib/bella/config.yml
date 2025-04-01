@@ -1,0 +1,8 @@
+---
+
+base-url: http://localhost:8070
+
+max-alerts-per-host: 10
+
+max-steps-per-episode: 100
+
