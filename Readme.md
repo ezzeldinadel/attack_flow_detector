@@ -3,7 +3,7 @@
 **Find the MITRE ATT&CK flows sneakily hiding in your alerts, by making contextual groupings, then finding causal sequences.**
 
 ___
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues) 
+[[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dwyl/esta/issues) 
 [![License](https://img.shields.io/pypi/l/mia.svg)]() 
 <a href="https://https://github.com/ezzeldinadel/attack_flow_detector/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/ezzeldinadel/attack_flow_detector"></a>
 <a href="https://github.com/kaiiyer/ezzeldinadel/attack_flow_detector"><img alt="GitHub forks" src="https://img.shields.io/github/forks/ezzeldinadel/attack_flow_detector"></a>
@@ -11,7 +11,7 @@ ___
 <img src="https://img.shields.io/github/contributors/ezzeldinadel/attack_flow_detector" /></a>
 <a href="https://github.com/ezzeldinadel/attack_flow_detector/graphs/stars" alt="Stars">
 <img src="https://img.shields.io/github/stars/ezzeldinadel/attack_flow_detector" /></a>
-[![Open Source Love svg1](https://badges.frapsoft.com/os/v3/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+[![Open Source Love svg1](https://badges.frapsoft.com/os/v3/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)](https://github.com/ezzeldinadel/attack_flow_detector/edit/main/Readme.md)
 
 ## 🔍 Overview
 
