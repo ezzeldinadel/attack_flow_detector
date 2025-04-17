@@ -23,13 +23,6 @@ Attack Flow Detector is a Python-based tool designed to analyze security alerts 
 - **MITRE ATT&CK Mapping**: Aligns detected patterns with known ATT&CK techniques.
 - **Modular Design**: Easily extendable to incorporate additional data sources or detection logic.
 
-## 📁 Project Structure
-
-attack_flow_detector/ ├── correlation_test_py.py # Core script for correlation analysis ├── README.md # Project documentation
-
-bash
-Copy code
-
 ## ⚙️ Installation
 
 1. **Clone the repository:**
@@ -41,7 +34,6 @@ Copy code
 2. **Set up a virtual environment (optional but recommended):**
 
 ```bash
-Copy code
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
@@ -49,7 +41,6 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 
 ```bash
-Copy code
 pip install -r requirements.txt
 ```
 
