@@ -1,0 +1,79 @@
+{
+    "clusters": [
+        {
+            "cluster_id": "cluster_1",
+            "summary": "Initial access attempt followed by multiple RDP connection attempts from various IP addresses, indicating potential brute force attack",
+            "event_ids": [
+                "02/14/2018-12:30:23.893882",
+                "02/14/2018-12:30:24.158368",
+                "02/14/2018-12:30:24.158368",
+                "02/14/2018-12:30:28.186213",
+                "02/14/2018-12:31:05.389409",
+                "02/14/2018-12:31:16.883358",
+                "02/14/2018-12:31:54.918087",
+                "02/14/2018-12:31:55.443786",
+                "02/14/2018-12:31:35.121356",
+                "02/14/2018-12:31:05.777047",
+                "02/14/2018-12:31:06.726320",
+                "02/14/2018-12:30:51.176784"
+            ],
+            "mitre_techniques": [
+                "T1190",
+                "T1110",
+                "T1021"
+            ],
+            "confidence_score": 0.85
+        },
+        {
+            "cluster_id": "cluster_2",
+            "summary": "SMB share access attempts followed by ETERNALBLUE exploit probes, indicating potential WannaCry-like attack pattern",
+            "event_ids": [
+                "02/14/2018-13:00:31.435798",
+                "02/14/2018-13:00:35.240466",
+                "02/14/2018-13:00:31.598599",
+                "02/14/2018-13:00:31.598599",
+                "02/14/2018-13:00:57.562391",
+                "02/14/2018-13:01:01.687672",
+                "02/14/2018-13:00:57.816407",
+                "02/14/2018-13:00:57.816407"
+            ],
+            "mitre_techniques": [
+                "T1135",
+                "T1210",
+                "T1195"
+            ],
+            "confidence_score": 0.92
+        },
+        {
+            "cluster_id": "cluster_3",
+            "summary": "Multiple RDP connections from different geographical locations, suggesting potential lateral movement attempt",
+            "event_ids": [
+                "02/14/2018-13:00:43.732361",
+                "02/14/2018-12:58:08.905924",
+                "02/14/2018-13:01:21.719863",
+                "02/14/2018-13:01:28.781729",
+                "02/14/2018-13:01:13.379676",
+                "02/14/2018-12:58:08.905924",
+                "02/14/2018-13:02:16.180756",
+                "02/14/2018-13:02:04.418892",
+                "02/14/2018-13:02:16.756844",
+                "02/14/2018-13:02:33.716907"
+            ],
+            "mitre_techniques": [
+                "T1021",
+                "T1210",
+                "T1028"
+            ],
+            "confidence_score": 0.78
+        }
+    ],
+    "metadata": {
+        "total_clusters": 3,
+        "total_events": 30,
+        "time_range": {
+            "start": "02/14/2018-12:30:23.893882",
+            "end": "02/14/2018-13:33:35.313921"
+        },
+        "analysis_timestamp": "2024-03-20T10:30:00Z"
+    }
+} 

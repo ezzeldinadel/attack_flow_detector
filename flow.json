@@ -1,0 +1,124 @@
+{
+    "attack_flows": [
+        {
+            "flow_id": "flow_1",
+            "summary": "Initial access through SMB vulnerability followed by lateral movement via RDP",
+            "sequence": [
+                {
+                    "event_id": "02/14/2018-12:30:23.893882",
+                    "description": "SMB share access attempt",
+                    "source_ip": "183.83.224.201",
+                    "destination_ip": "172.31.64.111",
+                    "mitre_technique": "T1135",
+                    "confidence": 0.85
+                },
+                {
+                    "event_id": "02/14/2018-12:30:24.158368",
+                    "description": "ETERNALBLUE exploit probe",
+                    "source_ip": "183.83.224.201",
+                    "destination_ip": "172.31.64.111",
+                    "mitre_technique": "T1210",
+                    "confidence": 0.92
+                },
+                {
+                    "event_id": "02/14/2018-12:31:05.389409",
+                    "description": "RDP connection attempt",
+                    "source_ip": "172.31.64.111",
+                    "destination_ip": "183.134.62.162",
+                    "mitre_technique": "T1021",
+                    "confidence": 0.78
+                }
+            ],
+            "mitre_tactics": [
+                "Initial Access",
+                "Execution",
+                "Lateral Movement"
+            ],
+            "confidence_score": 0.85
+        },
+        {
+            "flow_id": "flow_2",
+            "summary": "Multiple RDP connections from different sources indicating potential credential stuffing attack",
+            "sequence": [
+                {
+                    "event_id": "02/14/2018-13:00:43.732361",
+                    "description": "RDP connection from Brazil",
+                    "source_ip": "172.31.64.111",
+                    "destination_ip": "175.195.219.31",
+                    "mitre_technique": "T1021",
+                    "confidence": 0.82
+                },
+                {
+                    "event_id": "02/14/2018-13:01:21.719863",
+                    "description": "RDP connection from Russia",
+                    "source_ip": "172.31.64.111",
+                    "destination_ip": "5.101.40.105",
+                    "mitre_technique": "T1021",
+                    "confidence": 0.79
+                },
+                {
+                    "event_id": "02/14/2018-13:02:16.180756",
+                    "description": "RDP connection from China",
+                    "source_ip": "172.31.64.111",
+                    "destination_ip": "212.92.115.177",
+                    "mitre_technique": "T1021",
+                    "confidence": 0.81
+                }
+            ],
+            "mitre_tactics": [
+                "Initial Access",
+                "Lateral Movement"
+            ],
+            "confidence_score": 0.81
+        },
+        {
+            "flow_id": "flow_3",
+            "summary": "SMB share enumeration followed by exploit attempt",
+            "sequence": [
+                {
+                    "event_id": "02/14/2018-13:00:31.435798",
+                    "description": "SMB share access",
+                    "source_ip": "187.95.99.203",
+                    "destination_ip": "172.31.64.111",
+                    "mitre_technique": "T1135",
+                    "confidence": 0.88
+                },
+                {
+                    "event_id": "02/14/2018-13:00:31.598599",
+                    "description": "ETERNALBLUE exploit probe",
+                    "source_ip": "187.95.99.203",
+                    "destination_ip": "172.31.64.111",
+                    "mitre_technique": "T1210",
+                    "confidence": 0.91
+                },
+                {
+                    "event_id": "02/14/2018-13:00:35.240466",
+                    "description": "SMB unicode share access",
+                    "source_ip": "187.95.99.203",
+                    "destination_ip": "172.31.64.111",
+                    "mitre_technique": "T1135",
+                    "confidence": 0.87
+                }
+            ],
+            "mitre_tactics": [
+                "Discovery",
+                "Execution"
+            ],
+            "confidence_score": 0.89
+        }
+    ],
+    "metadata": {
+        "total_flows": 3,
+        "total_events": 9,
+        "time_range": {
+            "start": "02/14/2018-12:30:23.893882",
+            "end": "02/14/2018-13:02:16.180756"
+        },
+        "analysis_timestamp": "2024-03-20T10:30:00Z",
+        "attack_patterns": [
+            "Initial Access -> Execution -> Lateral Movement",
+            "Credential Access -> Lateral Movement",
+            "Discovery -> Execution"
+        ]
+    }
+} 
