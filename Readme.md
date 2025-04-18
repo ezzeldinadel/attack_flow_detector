@@ -62,6 +62,6 @@ This project is licensed under the MIT License. See the LICENSE file for details
 ## 📬 Contact
 For questions or suggestions, please open an issue on the GitHub repository.
 
-Relevant tools:- 
-https://github.com/cypienta/data_mapper_model
-https://github.com/ezzeldinadel/attack_technique_detector
+## Relevant tools:- 
+- https://github.com/cypienta/data_mapper_model
+- https://github.com/ezzeldinadel/attack_technique_detector
